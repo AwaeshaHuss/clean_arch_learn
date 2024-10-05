@@ -20,7 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
           if(state.status.isInitial) return _buildInitialWidget();
           if(state.status.isLoading) return _buildLoadingWidget();
           if(state.status.isError) return _buildErrorWidget(context);
-          if(state.status.isSuccess) return _buildSuccessWidget(context, state.posts);
+          if(state.status.isSuccess) {
+            return RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: _buildSuccessWidget(context, state.posts));
+          }
           return 0.width;
         },
       ),
@@ -75,5 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _onRefresh() async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) {
+      PostBloc.get(context).add(const GetAllPostsEvent());
+    }
   }
 }
