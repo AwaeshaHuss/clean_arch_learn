@@ -12,11 +12,10 @@ abstract class PostRemoteDataSource{
 class PostRemoteDataSourceHttpImpl implements PostRemoteDataSource{
   @override
   Future<List<PostModel>> getAllPosts() async{
-    final response = await HttpService().request(
+    final response = await HttpService().call(
     postsEndPoint, 
-    method: HttpMethod.get,
-    headers: {"Content-Type": "application/json"},
-    );
+    method: HttpMethod.get, 
+    headers: {"Content-Type": "application/json"});
 
     if(response.statusCode == 200){
        final List decodedJson = json.decode(response.body) as List;

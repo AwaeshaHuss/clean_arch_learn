@@ -1,3 +1,10 @@
+import 'package:clean_arch_learn/features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:clean_arch_learn/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:clean_arch_learn/features/auth/domain/repositories/auth_repository.dart';
+import 'package:clean_arch_learn/features/auth/domain/use_cases/login_use_case.dart';
+import 'package:clean_arch_learn/features/auth/domain/use_cases/logout_use_case.dart';
+import 'package:clean_arch_learn/features/auth/domain/use_cases/register_use_case.dart';
+import 'package:clean_arch_learn/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_arch_learn/features/home/data/data_sources/post_remote_data_source.dart';
 import 'package:clean_arch_learn/features/home/data/reposetories/post_reposetory_impl.dart';
 import 'package:clean_arch_learn/features/home/domain/reposetories/posts_reposetories.dart';
@@ -9,7 +16,7 @@ final GetIt sl = GetIt.I;
 
 void init() async{
 
-  //* Features
+  //? Features
 
   //* Home
   //* Bloc
@@ -28,7 +35,22 @@ void init() async{
 
   sl.registerLazySingleton<PostRemoteDataSource>(() => PostRemoteDataSourceHttpImpl());
 
-  //* External
+  //* Auth
+  //* Bloc
 
-  
+  sl.registerFactory(() => AuthBloc(registerUserUseCase: sl(), loginUseCase: sl(), logOutUseCase: sl()));
+
+  //* UseCase
+
+  sl.registerLazySingleton(() => RegisterUseCase(sl()));
+  sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => LogOutUseCase(sl()));
+
+  //* Repo
+
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
+
+  //* DataSource
+
+  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceHttpImpl());
 }

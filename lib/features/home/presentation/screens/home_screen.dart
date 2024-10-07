@@ -1,4 +1,6 @@
 import 'package:clean_arch_learn/core/utils.dart';
+import 'package:clean_arch_learn/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_arch_learn/features/auth/presentation/screens/sign_in_up_screen.dart';
 import 'package:clean_arch_learn/features/home/domain/entities/post_entity.dart';
 import 'package:clean_arch_learn/features/home/presentation/bloc/post_bloc.dart';
 import 'package:flutter/material.dart';
@@ -14,49 +16,78 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<PostBloc, PostState>(
-        builder: (context, state) {
-          if(state.status.isInitial) return _buildInitialWidget();
-          if(state.status.isLoading) return _buildLoadingWidget();
-          if(state.status.isError) return _buildErrorWidget(context);
-          if(state.status.isSuccess) {
-            return RefreshIndicator(
-            onRefresh: _onRefresh,
-            child: _buildSuccessWidget(context, state.posts));
-          }
-          return 0.width;
+    return PopScope(
+      canPop: false,
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if(state.loggedOut)Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const SignInUpScreen()));
         },
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: IconButton.outlined(
+                    onPressed: () {
+                      AuthBloc.get(context).add(const LogoutEvent());
+                    },
+                    icon: const Icon(Icons.logout_rounded)),
+              )
+            ],
+          ),
+          body: BlocBuilder<PostBloc, PostState>(
+            builder: (context, state) {
+              if (state.status.isInitial) return _buildInitialWidget();
+              if (state.status.isLoading) return _buildLoadingWidget();
+              if (state.status.isError) return _buildErrorWidget(context);
+              if (state.status.isSuccess) {
+                return RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    child: _buildSuccessWidget(context, state.posts));
+              }
+              return 0.width;
+            },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildInitialWidget(){
+  Widget _buildInitialWidget() {
     return const Center(
       child: Text('this\'s initial state for this screen'),
     );
   }
 
-  Widget _buildSuccessWidget(context, List<PostEntity> posts){
+  Widget _buildSuccessWidget(context, List<PostEntity> posts) {
     return ListView.builder(
-        itemCount: posts.length,
-        itemBuilder: (context, index) {
-          final post = posts[index];
-          return index == 0
-          ? 32.height
-          : Card(
-            elevation: 0,
-            child: ListTile(
-              title: Text(post.title ?? 'No title', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),),
-              subtitle: Text(post.body ?? 'No body',  style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w400)),
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        final post = posts[index];
+        return Card(
+          elevation: .325,
+          child: ListTile(
+            title: Text(
+              post.title ?? 'No title',
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
+                  ?.copyWith(fontWeight: FontWeight.w800),
             ),
-          );
-        },
-        padding: const EdgeInsets.all(4.0),
-      );
+            subtitle: Text(post.body ?? 'No body',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge
+                    ?.copyWith(fontWeight: FontWeight.w400)),
+          ),
+        );
+      },
+      padding: const EdgeInsets.all(4.0),
+    );
   }
 
-  Widget _buildLoadingWidget(){
+  Widget _buildLoadingWidget() {
     return const Center(
       child: CircularProgressIndicator.adaptive(
         strokeWidth: 1.0,
@@ -64,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildErrorWidget(context){
+  Widget _buildErrorWidget(context) {
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -73,9 +104,11 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const Text('Error occurd, try again later!!!'),
           12.height,
-          TextButton(onPressed: (){
-            PostBloc.get(context).add(const GetAllPostsEvent());
-          }, child: const Text('try again'))
+          TextButton(
+              onPressed: () {
+                PostBloc.get(context).add(const GetAllPostsEvent());
+              },
+              child: const Text('try again'))
         ],
       ),
     );

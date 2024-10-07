@@ -7,7 +7,21 @@ class HttpService {
 
   HttpService();
 
-  Future<Response> request<T>(
+  Future<Response> call<T>(
+    String endpoint, {
+    required HttpMethod method,
+    Map<String, String>? headers,
+    T? body,
+  }) async {
+    return await _request<T>(
+      endpoint,
+      method: method,
+      headers: headers,
+      body: body,
+    );
+  }
+
+  Future<Response> _request<T>(
     String endpoint, {
     required HttpMethod method,
     Map<String, String>? headers,
