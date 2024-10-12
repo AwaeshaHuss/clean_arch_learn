@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -61,29 +62,40 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSuccessWidget(context, List<PostEntity> posts) {
-    return ListView.builder(
-      itemCount: posts.length,
-      itemBuilder: (context, index) {
-        final post = posts[index];
-        return Card(
-          elevation: .325,
-          child: ListTile(
-            title: Text(
-              post.title ?? 'No title',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge
-                  ?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            subtitle: Text(post.body ?? 'No body',
+    return CustomScrollView(
+      slivers: [
+        SliverList.builder(
+        itemCount: posts.length ~/ 1,
+        itemBuilder: (context, index) {
+          final post = posts[index];
+          return Card(
+            elevation: .325,
+            child: ListTile(
+              title: Text(
+                post.title ?? 'No title',
                 style: Theme.of(context)
                     .textTheme
                     .labelLarge
-                    ?.copyWith(fontWeight: FontWeight.w400)),
-          ),
-        );
-      },
-      padding: const EdgeInsets.all(4.0),
+                    ?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              subtitle: Text(post.body ?? 'No body',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge
+                      ?.copyWith(fontWeight: FontWeight.w400)),
+            ),
+          );
+        }
+      ),
+      SliverToBoxAdapter(
+        child: 8.height,
+      ),
+      const SliverToBoxAdapter(
+        child: Center(
+          child: CircularProgressIndicator(strokeWidth: 1),
+        ),
+      ),
+      ]
     );
   }
 
