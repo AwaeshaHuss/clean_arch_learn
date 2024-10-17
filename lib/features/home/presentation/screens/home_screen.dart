@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return CustomScrollView(
       slivers: [
         SliverList.builder(
-        itemCount: posts.length ~/ 1,
+        itemCount: posts.length ~/ 10,
         itemBuilder: (context, index) {
           final post = posts[index];
           return Card(
