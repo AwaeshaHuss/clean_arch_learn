@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:clean_arch_learn/core/errors/failures.dart';
-import 'package:clean_arch_learn/features/home/data/models/post_model.dart';
 import 'package:clean_arch_learn/features/home/domain/entities/post_entity.dart';
 import 'package:clean_arch_learn/features/home/domain/use_cases/get_all_posts_usecase.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -23,7 +21,7 @@ class PostBloc extends Bloc<PostEvent, PostState>{
   FutureOr<void> _onGetAllPosts(GetAllPostsEvent event, Emitter<PostState> emit) async{
     emit(state.copyWith(status: PostStateStatus.loading));
     Either<Failure, List<PostEntity>> result;
-    result = await getAllPostsUseCase.call();
+    result = await getAllPostsUseCase();
     result.fold((l){
       emit(state.copyWith(status: PostStateStatus.error));
     }, (r){
